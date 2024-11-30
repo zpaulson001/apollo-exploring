@@ -1,18 +1,18 @@
 type Query {
-  dogs: [Dog!]!
+  pokemon(id: ID!): Pokemon!
+  allTrainers: [Trainer!]!
 }
 
-type User {
+type Trainer {
   id: ID!
   name: String!
-  email: String!
+  pokemon: [Pokemon!]
 }
 
-type Dog {
+type Pokemon {
   id: ID!
   name: String!
-  nickname: String
-  age: Int
-  breed: String
-  owner: User
+  types: [String!]!
+  height: Int!
+  weight: Int!
 }
