@@ -3,7 +3,9 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import gql from 'graphql-tag';
 import { resolvers } from './resolvers.ts';
 
-const typeDefs = gql.gql(Deno.readTextFileSync('./schema.txt'));
+const typeDefs = gql.gql(
+  Deno.readTextFileSync(Deno.cwd() + '/src/schema.graphql')
+);
 
 async function startApolloServer() {
   const server = new ApolloServer({ typeDefs, resolvers });
