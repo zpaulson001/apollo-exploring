@@ -1,18 +1,25 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
 import gql from 'graphql-tag';
 import { resolvers } from './resolvers.ts';
+import { Hono } from 'hono';
+import { logger } from 'hono/logger';
+import { createApolloMiddleware } from './apolloMiddleware.ts';
+
+const app = new Hono();
+
+app.use(logger());
 
 const typeDefs = gql.gql(
   Deno.readTextFileSync(Deno.cwd() + '/src/schema.graphql')
 );
 
-async function startApolloServer() {
-  const server = new ApolloServer({ typeDefs, resolvers });
-  const { url } = await startStandaloneServer(server, {
-    listen: { port: 4000 },
-  });
-  console.log(`🚀 Server ready at ${url}`);
-}
+const server = new ApolloServer({ typeDefs, resolvers, introspection: true });
+await server.start();
 
-startApolloServer();
+app.use('graphql', createApolloMiddleware(server));
+
+app.get('/', (c) => {
+  return c.text('Hello Hono!');
+});
+
+Deno.serve({ port: 8787 }, app.fetch);
